@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -16,6 +17,7 @@ func TestToken(t *testing.T) {
 	h := handler{
 		stats: make(map[string]uint64),
 		key:   []byte("some-baked-in-secret"),
+		mu:    sync.Mutex,
 	}
 
 	rec := httptest.NewRecorder()

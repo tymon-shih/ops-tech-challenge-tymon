@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - '*'
+  pull request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -18,11 +21,25 @@ jobs:
         with:
           go-version: 1.17
 
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
       - name: Build
         run: go build
 
-      - name: Run Tests
+      - name: Run tests
         run: go test -v ./...
 
       - name: Build Docker image
         run: docker build -t ops-tech-challenge .
+
+      # - name: Tag Docker Image
+      #   run: docker tag ops-tech-challenge docker.myob.com/future-makers-academy/ops-tech-challenge:latest
+
+      # - name: Push Docker Image
+      #   run: docker push docker.myob.com/future-makers-academy/ops-tech-challenge:latest

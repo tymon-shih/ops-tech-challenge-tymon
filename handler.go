@@ -22,18 +22,21 @@ func (h handler) token(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	h.stats["requests"] += 1
 
-	body, _ := io.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	out := createMAC(body, h.key)
 	fmt.Fprintf(w, "%x", out)
 
-	w.WriteHeader(201)
+	w.WriteHeader(http.StatusAccepted)
 }
 
 func (h handler) metrics(w http.ResponseWriter, r *http.Request) {
-
 	enc := json.NewEncoder(w)
 	enc.Encode(h.stats)
-	w.WriteHeader(201)
+	w.WriteHeader(http.StatusOK)
 }
 
 func createMAC(message, key []byte) []byte {
