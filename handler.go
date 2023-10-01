@@ -17,7 +17,9 @@ type handler struct {
 }
 
 func (h handler) health(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
+	// w.WriteHeader(http.StatusNotImplemented)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
 }
 
 func (h handler) token(w http.ResponseWriter, r *http.Request) {
@@ -34,6 +36,9 @@ func (h handler) token(w http.ResponseWriter, r *http.Request) {
 	}
 	out := createMAC(body, h.key)
 	fmt.Fprintf(w, "%x", out)
+
+	output := fmt.Sprintf("HMAC value is: %v", out)
+	w.Write([]byte(output))
 
 	w.WriteHeader(http.StatusAccepted)
 }
