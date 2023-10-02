@@ -16,31 +16,55 @@ type handler struct {
 	mu    sync.Mutex
 }
 
-func (h handler) health(w http.ResponseWriter, _ *http.Request) {
+func (h handler) health(w http.ResponseWriter, r *http.Request) {
 	// w.WriteHeader(http.StatusNotImplemented)
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		w.Write([]byte("Only GET requests are allowed!"))
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+	w.Write([]byte("Ok!"))
+
+	data := []byte{79, 107, 33}
+	fmt.Fprintf(w, "\nAn alternate way to write \"Ok!\" is the following: %v", string(data))
+
 }
 
 func (h handler) token(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		w.Write([]byte("Only POST requests are allowed!"))
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Error reading body"))
+		return
+	}
+
+	if len(body) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Empty body"))
+		return
+	}
+
+	out := createMAC(body, h.key)
+	output := fmt.Sprintf("HMAC value is: %v", out)
 
 	h.mu.Lock()
 	h.stats["requests"] += 1
 	h.mu.Unlock()
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	out := createMAC(body, h.key)
-	fmt.Fprintf(w, "%x", out)
-
-	output := fmt.Sprintf("HMAC value is: %v", out)
-	w.Write([]byte(output))
-
 	w.WriteHeader(http.StatusAccepted)
+	w.Write([]byte(output))
+	w.Write([]byte("\nHMAC in hexademical format: "))
+	fmt.Fprintf(w, "%x", out)
 }
 
 func (h handler) metrics(w http.ResponseWriter, r *http.Request) {

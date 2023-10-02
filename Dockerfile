@@ -1,4 +1,4 @@
-FROM golang:1.21.0 AS build
+FROM golang:latest AS build
 
 WORKDIR /src
 COPY . .
@@ -9,4 +9,5 @@ COPY --from=build /out/ops-tech-challenge /app/ops-tech-challenge
 ENV SECRET="tymonsecret"
 
 WORKDIR /app
+EXPOSE 8080
 CMD ["./ops-tech-challenge"]

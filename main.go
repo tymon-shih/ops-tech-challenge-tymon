@@ -5,11 +5,12 @@ import (
 	"os"
 )
 
-var requestIPs []string
+// var requestIPs []string
 
 func main() {
 	h := &handler{
-		key: []byte(os.Getenv("SECRET")),
+		key:   []byte(os.Getenv("SECRET")),
+		stats: make(map[string]uint64),
 	}
 	http.HandleFunc("/token", h.token)
 	http.HandleFunc("/metrics", h.metrics)
