@@ -11,11 +11,11 @@ import (
 )
 
 func TestToken(t *testing.T) {
-	body := "123"
+	body := "tymontest"
 
 	h := handler{
 		stats: make(map[string]uint64),
-		key:   []byte("some-baked-in-secret"),
+		key:   []byte("tymontest"),
 	}
 
 	rec := httptest.NewRecorder()
