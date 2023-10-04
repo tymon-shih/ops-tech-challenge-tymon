@@ -1,8 +1,9 @@
-FROM golang:latest AS build
+FROM golang:1.21.0 AS build
 
 WORKDIR /src
 COPY . .
-RUN CGO_ENABLED=0 go build -o /out/ops-tech-challenge
+ARG COMMIT_HASH
+RUN CGO_ENABLED=0 go build -ldflags "-X main.SECRET=${COMMIT_HASH}" -o /out/ops-tech-challenge
 
 FROM alpine:3.14 AS runtime
 # FROM golang:latest AS runtime

@@ -14,12 +14,16 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
-          go-version: 1.17
+          go-version: 1.21.0
+
+      - name: Get the latest commit hash
+        id: gitsha
+        run: echo "::set-output name=sha::$(git rev-parse HEAD)"
 
       - name: Cache Go modules
         uses: actions/cache@v2
@@ -29,15 +33,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Build
-        run: go build
-
       - name: Run tests
         run: go test -v ./...
 
       - name: Build Docker image
-        run: docker build -t ops-tech-challenge .
-
+        run: docker build --build-arg COMMIT_HASH=${{ steps.gitsha.outputs.sha }} -t ops-tech-challenge .
+        
       # - name: Tag Docker Image
       #   run: docker tag ops-tech-challenge docker.myob.com/future-makers-academy/ops-tech-challenge:latest
 
