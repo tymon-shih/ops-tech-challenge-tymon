@@ -57,14 +57,14 @@ func (h handler) token(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 
 	out := createMAC(body, h.key)
-	// output := fmt.Sprintf("HMAC value is: %v", out)
+	output := fmt.Sprintf("HMAC value is: %v", out)
 
 	h.mu.Lock()
 	h.stats["requests"] += 1
 	h.mu.Unlock()
 
-	// w.Write([]byte(output))
-	// w.Write([]byte("\nHMAC in hexademical format: "))
+	w.Write([]byte(output))
+	w.Write([]byte("\nHMAC in hexademical format: "))
 	fmt.Fprintf(w, "%x", out)
 }
 
