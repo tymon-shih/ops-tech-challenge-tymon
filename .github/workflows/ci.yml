@@ -16,14 +16,16 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.21.0
+      # - name: Set up Go
+      #   uses: actions/setup-go@v3
+      #   with:
+      #     go-version: 1.21.0
+        # no need with go?
 
       - name: Get the latest commit hash
         id: gitsha
         run: echo "::set-output name=sha::$(git rev-parse HEAD)"
+        # look up if it will be deprecated?
 
       - name: Cache Go modules
         uses: actions/cache@v3
