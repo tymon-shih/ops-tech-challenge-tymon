@@ -1,3 +1,3 @@
 module github.com/myob-ops/ops-tech-challenge
 
-go 1.16
+go 1.21.0

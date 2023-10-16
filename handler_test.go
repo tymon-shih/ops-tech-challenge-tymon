@@ -11,11 +11,11 @@ import (
 )
 
 func TestToken(t *testing.T) {
-	body := "123"
+	body := "tymontest"
 
 	h := handler{
 		stats: make(map[string]uint64),
-		key:   []byte("some-baked-in-secret"),
+		key:   []byte("tymontest"),
 	}
 
 	rec := httptest.NewRecorder()
@@ -23,7 +23,11 @@ func TestToken(t *testing.T) {
 
 	h.token(rec, req)
 
+	// lines := strings.Split(strings.TrimSpace(rec.Body.String()), "\n")
+	// hmacHex := lines[len(lines)-1]
+
 	mac := createMAC([]byte(body), h.key)
+	// actual, _ := hex.DecodeString(hmacHex)
 	actual, _ := hex.DecodeString(rec.Body.String())
 
 	if !hmac.Equal(actual, mac) {

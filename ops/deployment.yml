@@ -1,0 +1,23 @@
+# Note: this deployment file is not currently used
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ops-tech-challenge-deployment
+  namespace: fma
+  labels:
+    app: ops-tech-challenge
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ops-tech-challenge
+  template:
+    metadata:
+      labels:
+        app: ops-tech-challenge
+    spec:
+      containers:
+        - image: docker.myob.com/future-makers-academy/ops-tech-challenge:latest
+          name: ops-tech-challenge
+          ports:
+            - containerPort: 8080

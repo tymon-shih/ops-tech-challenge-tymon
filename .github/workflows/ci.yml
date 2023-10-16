@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+  # pull_request:
+  #   branches:
+  #     - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.0
+        # no need with go? answer: apparently we do need it 
+
+      - name: Get the latest commit hash
+        id: gitsha
+        run: echo "::set-output name=sha::$(git rev-parse HEAD)"
+        # look up if it will be deprecated?
+
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Run tests
+        run: go test -v ./...
+
+      - name: Build Docker image
+        run: docker build --build-arg COMMIT_HASH=${{ steps.gitsha.outputs.sha }} -t ops-tech-challenge .
+
+      # - name: Tag Docker Image
+      #   run: docker tag ops-tech-challenge docker.myob.com/future-makers-academy/ops-tech-challenge:latest
+
+      # - name: Push Docker Image
+      #   run: docker push docker.myob.com/future-makers-academy/ops-tech-challenge:latest
