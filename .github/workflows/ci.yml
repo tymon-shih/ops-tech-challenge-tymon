@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - '*'
-  pull_request:
-    branches:
-      - '*'
+  # pull_request:
+  #   branches:
+  #     - '*'
 
 jobs:
   build:
@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: 1.21.0
-        # no need with go?
+        # no need with go? answer: apparently we do need it 
 
       - name: Get the latest commit hash
         id: gitsha
